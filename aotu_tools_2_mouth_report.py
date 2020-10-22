@@ -2,8 +2,8 @@
 Author: John Diamond
 Date: 2020-10-19 10:12:38
 LastEditors: John Diamond
-LastEditTime: 2020-10-22 17:50:11
-FilePath: \auto-tools\aotu_tools_2_weekly_daily_report.py
+LastEditTime: 2020-10-22 17:53:32
+FilePath: \auto-tools\aotu_tools_2_mouth_report.py
 '''
 # -*- coding:utf-8 -*-
 import openpyxl
@@ -29,9 +29,9 @@ class cFileOpt:
 
 	def Prepare(self):
 		self.RawDatSht = self.InputFil.worksheets[0]		# 0 -- raw data sheet
-		self.WeeklySht = self.InputFil.worksheets[2]		# 2 -- weekly report sheet		3 -- for debug
+		self.Mouth_Sht = self.InputFil.worksheets[2]		# 2 -- weekly report sheet		3 -- for debug
 
-		m_list = self.WeeklySht.merged_cells				# 取消单元格合并
+		m_list = self.Mouth_Sht.merged_cells				# 取消单元格合并
 		cr = []												# 先获取已合并的所有单元格
 		for m_area in m_list:
 			# 合并单元格的起始行坐标、终止行坐标。。。。，
@@ -40,29 +40,29 @@ class cFileOpt:
 			if r2 - r1 > 0:
 				cr.append((r1, r2, c1, c2))
 		for r in cr:
-				self.WeeklySht.unmerge_cells(start_row=r[0], end_row=r[1], start_column=r[2], end_column=r[3])
+				self.Mouth_Sht.unmerge_cells(start_row=r[0], end_row=r[1], start_column=r[2], end_column=r[3])
 
 		for x in range(3, 200):
-			self.WeeklySht.cell(row = x,column = 33).value = ''
-			self.WeeklySht.cell(row = x,column = 33).alignment = openpyxl.styles.Alignment(horizontal="center", vertical="center")
-			self.WeeklySht.cell(row = x,column = 33).font = openpyxl.styles.Font(name='微软雅黑', size=9)
+			self.Mouth_Sht.cell(row = x,column = 33).value = ''
+			self.Mouth_Sht.cell(row = x,column = 33).alignment = openpyxl.styles.Alignment(horizontal="center", vertical="center")
+			self.Mouth_Sht.cell(row = x,column = 33).font = openpyxl.styles.Font(name='微软雅黑', size=9)
 			pass
 
 		for i in range(1, 10):								# 合并表头单元格
-			self.WeeklySht.merge_cells(start_row=1, start_column=i, end_row=2, end_column=i)
-		self.WeeklySht.merge_cells(start_row=1, start_column=18, end_row=2, end_column=18)
-		self.WeeklySht.freeze_panes = 'A3'					# 冻结前两行
+			self.Mouth_Sht.merge_cells(start_row=1, start_column=i, end_row=2, end_column=i)
+		self.Mouth_Sht.merge_cells(start_row=1, start_column=18, end_row=2, end_column=18)
+		self.Mouth_Sht.freeze_panes = 'A3'					# 冻结前两行
 		pass
 
 	def FillDailySht(self, i, j, celval):
 		if celval == 0:
 			celval = ''
-		self.WeeklySht.cell(row = i,column = j).value = celval
+		self.Mouth_Sht.cell(row = i,column = j).value = celval
 		if j == 2:
-			self.WeeklySht.cell(row = i,column = j).number_format = 'yyyy/mm/dd'
+			self.Mouth_Sht.cell(row = i,column = j).number_format = 'yyyy/mm/dd'
 		pass
 
-	def FillWeeklySht(self):
+	def FillMouth_Sht(self):
 
 		pass
 
@@ -165,16 +165,16 @@ class cFileOpt:
 		thin = openpyxl.styles.Side(style="thin", color="000000")
 		for i in range(startrow, endrow):
 			for j in range(1, 19):
-				self.WeeklySht.cell(row = i,column = j).border = openpyxl.styles.Border(top=thin, left=thin, right=thin, bottom=thin)
+				self.Mouth_Sht.cell(row = i,column = j).border = openpyxl.styles.Border(top=thin, left=thin, right=thin, bottom=thin)
 		pass
 
 	def mergecells(self,startrow, endrow):								# 合并某些单元格
-		self.WeeklySht.merge_cells(start_row=startrow, start_column=1, end_row=endrow, end_column=1)
-		self.WeeklySht.merge_cells(start_row=startrow, start_column=3, end_row=endrow, end_column=3)
-		self.WeeklySht.merge_cells(start_row=startrow, start_column=4, end_row=endrow, end_column=4)
-		self.WeeklySht.merge_cells(start_row=startrow, start_column=5, end_row=endrow, end_column=5)
-		self.WeeklySht.merge_cells(start_row=startrow, start_column=6, end_row=endrow, end_column=6)
-		self.WeeklySht.merge_cells(start_row=startrow, start_column=9, end_row=endrow, end_column=9)
+		self.Mouth_Sht.merge_cells(start_row=startrow, start_column=1, end_row=endrow, end_column=1)
+		self.Mouth_Sht.merge_cells(start_row=startrow, start_column=3, end_row=endrow, end_column=3)
+		self.Mouth_Sht.merge_cells(start_row=startrow, start_column=4, end_row=endrow, end_column=4)
+		self.Mouth_Sht.merge_cells(start_row=startrow, start_column=5, end_row=endrow, end_column=5)
+		self.Mouth_Sht.merge_cells(start_row=startrow, start_column=6, end_row=endrow, end_column=6)
+		self.Mouth_Sht.merge_cells(start_row=startrow, start_column=9, end_row=endrow, end_column=9)
 	pass
 
 def main():
