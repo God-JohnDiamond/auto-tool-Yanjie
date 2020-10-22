@@ -2,9 +2,13 @@
  * @Author: John Diamond
  * @Date: 2020-10-19 10:14:40
  * @LastEditors: John Diamond
- * @LastEditTime: 2020-10-19 10:15:45
- * @FilePath: \auto_tools\README.md
+ * @LastEditTime: 2020-10-22 18:05:37
+ * @FilePath: \auto-tools\README.md
 -->
 ### 周报那里边儿的是表头逻辑，跟日报是一样的，然后直到转入和离职还有在职这三个不用管，到时候手动输入，包括日报里转入和在职，那个也不用管的。
 ### 表里面有四个sheet，最后两个sheet直接删掉就好了，我那会儿就是想做个留存，没有更新的东西做出来之前，我还得继续用，但是你这边直接删掉就好了
 ### 周报里面本周结果数据其实也不用管，我到时候把搞个公式，一带就出来了。
+
+第一个分支是周报用的，日报周报烂尾
+
+第二个分支是月报以及年报汇总表，对应的aotu_tools_2_mouth_report.py 作为之后的主版本

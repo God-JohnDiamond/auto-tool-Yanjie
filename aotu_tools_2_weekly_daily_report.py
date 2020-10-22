@@ -2,7 +2,7 @@
 Author: John Diamond
 Date: 2020-10-19 10:12:38
 LastEditors: John Diamond
-LastEditTime: 2020-10-21 17:44:44
+LastEditTime: 2020-10-22 17:50:11
 FilePath: \auto-tools\aotu_tools_2_weekly_daily_report.py
 '''
 # -*- coding:utf-8 -*-
@@ -14,23 +14,24 @@ from datetime import datetime
 class cFileOpt:
 
 	def __init__(self):
-		self.InputFil = openpyxl.load_workbook('2.xlsx')
+		self.InputFil = openpyxl.load_workbook('3.xlsx')
 		self.NowDate = date.today()						# 获取当前日期
 		print('今天是：%s' % self.NowDate)
-		print('文件 2.xlsx 打开成功！')
+		self.basedate = date(1899, 12, 30)				# Excel的时间天数是从这天开始计算的
+		self.Curdate = self.NowDate - self.basedate			# 计算当前日期的天数
+		print('文件 3.xlsx 打开成功！')
 
 	def CloseFiles(self):
-		self.InputFil.save(filename = '2.xlsx')
-		print('文件 2.xlsx 保存成功！' )
+		self.InputFil.save(filename = '3.xlsx')
+		print('文件 3.xlsx 保存成功！' )
 		self.InputFil.close()
 		pass
 
 	def Prepare(self):
 		self.RawDatSht = self.InputFil.worksheets[0]		# 0 -- raw data sheet
-		self.Daily_Sht = self.InputFil.worksheets[3]		# 1 -- daily report sheet		3 -- for debug
-		self.WeeklySht = self.InputFil.worksheets[2]		# 2 -- weekly report sheet
+		self.WeeklySht = self.InputFil.worksheets[2]		# 2 -- weekly report sheet		3 -- for debug
 
-		m_list = self.Daily_Sht.merged_cells				# 取消单元格合并
+		m_list = self.WeeklySht.merged_cells				# 取消单元格合并
 		cr = []												# 先获取已合并的所有单元格
 		for m_area in m_list:
 			# 合并单元格的起始行坐标、终止行坐标。。。。，
@@ -39,27 +40,26 @@ class cFileOpt:
 			if r2 - r1 > 0:
 				cr.append((r1, r2, c1, c2))
 		for r in cr:
-				self.Daily_Sht.unmerge_cells(start_row=r[0], end_row=r[1], start_column=r[2], end_column=r[3])
+				self.WeeklySht.unmerge_cells(start_row=r[0], end_row=r[1], start_column=r[2], end_column=r[3])
 
-		for x in range(3, 500):
-			for y in range(1, 50):
-				self.Daily_Sht.cell(row = x,column = y).value = ''
-				self.Daily_Sht.cell(row = x,column = y).alignment = openpyxl.styles.Alignment(horizontal="center", vertical="center")
-				self.Daily_Sht.cell(row = x,column = y).font = openpyxl.styles.Font(name='微软雅黑', size=9)
-				pass
+		for x in range(3, 200):
+			self.WeeklySht.cell(row = x,column = 33).value = ''
+			self.WeeklySht.cell(row = x,column = 33).alignment = openpyxl.styles.Alignment(horizontal="center", vertical="center")
+			self.WeeklySht.cell(row = x,column = 33).font = openpyxl.styles.Font(name='微软雅黑', size=9)
 			pass
+
 		for i in range(1, 10):								# 合并表头单元格
-			self.Daily_Sht.merge_cells(start_row=1, start_column=i, end_row=2, end_column=i)
-		self.Daily_Sht.merge_cells(start_row=1, start_column=18, end_row=2, end_column=18)
-		self.Daily_Sht.freeze_panes = 'A3'					# 冻结前两行
+			self.WeeklySht.merge_cells(start_row=1, start_column=i, end_row=2, end_column=i)
+		self.WeeklySht.merge_cells(start_row=1, start_column=18, end_row=2, end_column=18)
+		self.WeeklySht.freeze_panes = 'A3'					# 冻结前两行
 		pass
 
 	def FillDailySht(self, i, j, celval):
 		if celval == 0:
 			celval = ''
-		self.Daily_Sht.cell(row = i,column = j).value = celval
+		self.WeeklySht.cell(row = i,column = j).value = celval
 		if j == 2:
-			self.Daily_Sht.cell(row = i,column = j).number_format = 'yyyy-mm-dd'
+			self.WeeklySht.cell(row = i,column = j).number_format = 'yyyy/mm/dd'
 		pass
 
 	def FillWeeklySht(self):
@@ -99,8 +99,8 @@ class cFileOpt:
 			self.FillDailySht(RowFillDaily, 1, ProjectNum)				# 写项目序号
 			self.FillDailySht(RowFillDaily, 3, ProjectList[j])			# 写项目名
 			
-			self.cellborder(RowFillDaily, (RowFillDaily + len(JobList)))	# 一个项目画一次框线
-			if RowFillDaily != (RowFillDaily + len(JobList) - 1):				# 合并项目的某些单元格
+			self.cellborder(RowFillDaily, (RowFillDaily + len(JobList)))# 一个项目画一次框线
+			if RowFillDaily != (RowFillDaily + len(JobList) - 1):		# 合并项目的某些单元格
 				self.mergecells(RowFillDaily, (RowFillDaily + len(JobList) - 1))
 			
 			for k in range(len(JobList)):								# 当前项目下的岗位数循环
@@ -118,37 +118,26 @@ class cFileOpt:
 				for jobloop in range(2, self.RawDatSht.max_row+1):		# 遍历以查找当前项目下的岗位1， 2，...
 					CelVal = self.RawDatSht.cell(row = jobloop,column = 3).value
 					if CelVal == JobList[k]:							# 遍历当前项目下的岗位
-						Cnt_Recommend += 1								# 有符合岗位的 推荐数+1
+						Cnt_Recommend += 1								# 当前行有岗位匹配 推荐数+1
+
 						if self.RawDatSht.cell(row = jobloop,column = 10).value == '是':
 							Cnt_Effective += 1							# 简历通过 有效数+1
 							pass
+
 						if self.RawDatSht.cell(row = jobloop,column = 12).value == '是':
 							Cnt_Oneside += 1							# 简历通过 一面数+1
 							pass
+
 						if self.RawDatSht.cell(row = jobloop,column = 13).value == '是':
 							Cnt_Endface += 1							# 简历通过 终面数+1
 							pass
+
 						if self.RawDatSht.cell(row = jobloop,column = 15).value == '是':
 							Cnt_Offer += 1								# 简历通过 offer数+1
-							updateDat = self.RawDatSht.cell(row = jobloop,column = 18).value
 
-							basedate = date(1899, 12, 30)				# Excel的时间天数是从这天开始计算的
-							Curdate = self.NowDate - basedate			# 计算当前日期的天数
-							#print(Curdate.days)
-
-							if updateDat != None: 						# offer为是且更新日期为程序运行的当前日期 入职数+1
-								if type(updateDat) == type(1):			# 日期有时候读出来 距1899-12-30的天数
-									if updateDat == Curdate.days:
-										Cnt_Entry += 1
-								elif datetime.date(updateDat) - basedate == Curdate:	 # 有时候读出来是datetime.datetime类型的数据
-									Cnt_Entry += 1							
-								pass
-							pass
 						if self.RawDatSht.cell(row = jobloop,column = 17).value == '是':
 							Cnt_Entry += 1								# 简历通过 入职数+1
 							pass
-						Recomm_date = self.RawDatSht.cell(row = jobloop,column = 5).value
-																		# 获取推荐日期
 					pass
 				# print('推荐:%d' % Cnt_Recommend)
 				# print('有效:%d' % Cnt_Effective)
@@ -156,7 +145,7 @@ class cFileOpt:
 				# print('终面:%d' % Cnt_Endface)
 				# print('offer:%d' % Cnt_Offer)
 				# print('入职:%d' % Cnt_Entry)
-				self.FillDailySht(RowFillDaily, 2, self.NowDate)			# 写推荐日期
+				self.FillDailySht(RowFillDaily, 2, self.NowDate)		# 写推荐日期
 				self.FillDailySht(RowFillDaily, 7, JobList[k])			# 写岗位名
 				self.FillDailySht(RowFillDaily, 10, Cnt_Recommend)		# 写各个阶段数量
 				self.FillDailySht(RowFillDaily, 11, Cnt_Effective)
@@ -166,28 +155,27 @@ class cFileOpt:
 				self.FillDailySht(RowFillDaily, 15, Cnt_Entry)
 				
 				RowFillDaily += 1										# 每完成一个岗位 行数+1 下移一行
-
 				pass
 
 			print('\n')
 			ProjectNum += 1												# 完成一个项目 序号+1
-		pass
+			pass
 
 	def cellborder(self, startrow, endrow):
 		thin = openpyxl.styles.Side(style="thin", color="000000")
 		for i in range(startrow, endrow):
 			for j in range(1, 19):
-				self.Daily_Sht.cell(row = i,column = j).border = openpyxl.styles.Border(top=thin, left=thin, right=thin, bottom=thin)
+				self.WeeklySht.cell(row = i,column = j).border = openpyxl.styles.Border(top=thin, left=thin, right=thin, bottom=thin)
 		pass
 
 	def mergecells(self,startrow, endrow):								# 合并某些单元格
-		self.Daily_Sht.merge_cells(start_row=startrow, start_column=1, end_row=endrow, end_column=1)
-		self.Daily_Sht.merge_cells(start_row=startrow, start_column=3, end_row=endrow, end_column=3)
-		self.Daily_Sht.merge_cells(start_row=startrow, start_column=4, end_row=endrow, end_column=4)
-		self.Daily_Sht.merge_cells(start_row=startrow, start_column=5, end_row=endrow, end_column=5)
-		self.Daily_Sht.merge_cells(start_row=startrow, start_column=6, end_row=endrow, end_column=6)
-		self.Daily_Sht.merge_cells(start_row=startrow, start_column=9, end_row=endrow, end_column=9)
-		pass
+		self.WeeklySht.merge_cells(start_row=startrow, start_column=1, end_row=endrow, end_column=1)
+		self.WeeklySht.merge_cells(start_row=startrow, start_column=3, end_row=endrow, end_column=3)
+		self.WeeklySht.merge_cells(start_row=startrow, start_column=4, end_row=endrow, end_column=4)
+		self.WeeklySht.merge_cells(start_row=startrow, start_column=5, end_row=endrow, end_column=5)
+		self.WeeklySht.merge_cells(start_row=startrow, start_column=6, end_row=endrow, end_column=6)
+		self.WeeklySht.merge_cells(start_row=startrow, start_column=9, end_row=endrow, end_column=9)
+	pass
 
 def main():
 	FileOpt = cFileOpt()
