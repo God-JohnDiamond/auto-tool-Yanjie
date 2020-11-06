@@ -2,7 +2,7 @@
 Author: John Diamond
 Date: 2020-10-19 10:12:38
 LastEditors: John Diamond
-LastEditTime: 2020-10-23 18:03:26
+LastEditTime: 2020-11-06 17:16:26
 FilePath: \auto-tools\aotu_tools_2_mouth_report.py
 '''
 # -*- coding:utf-8 -*-
@@ -22,13 +22,13 @@ class cFileOpt:
 		print('输入要操作的sheet的位置数，比如第一个sheet就输入 1 然后回车，其他sheet以此类推...\n')
 		num_sheet = input('要操作的sheet数：')
 		print('输入 本月合计 的所在列，如AA列 输入AA 然后回车即可...\n')
-		Tmpcolnum_mouth = input('本月合计列：')
-		if len(Tmpcolnum_mouth) == 1:
-			self.colnum_mouth = ord(Tmpcolnum_mouth[0]) - 64
-			#print(ord(Tmpcolnum_mouth[0]))
-		elif len(Tmpcolnum_mouth) == 2:
-			self.colnum_mouth = (ord(Tmpcolnum_mouth[0]) - 39) + ord(Tmpcolnum_mouth[1]) - 64
-			#print(ord(Tmpcolnum_mouth[0]), ord(Tmpcolnum_mouth[1]))
+		self.Tmpcolnum_mouth = input('本月合计列：')
+		if len(self.Tmpcolnum_mouth) == 1:
+			self.colnum_mouth = ord(self.Tmpcolnum_mouth[0]) - 64
+			#print(ord(self.Tmpcolnum_mouth[0]))
+		elif len(self.Tmpcolnum_mouth) == 2:
+			self.colnum_mouth = (ord(self.Tmpcolnum_mouth[0]) - 39) + ord(self.Tmpcolnum_mouth[1]) - 64
+			#print(ord(self.Tmpcolnum_mouth[0]), ord(self.Tmpcolnum_mouth[1]))
 		#print(self.colnum_mouth)
 		self.Mouth_Sht = self.InputFil.worksheets[int(num_sheet) - 1]					# 0、1、2 -- mouth report sheet		4 -- for debug
 		pass
@@ -100,7 +100,7 @@ class cFileOpt:
 							continue
 							pass
 						else:
-							TmpCoordMouth[phaseloop].append(('AC%d,' % (projectrow + phaseloop))) 
+							TmpCoordMouth[phaseloop].append('%s%d,' % (self.Tmpcolnum_mouth, (projectrow + phaseloop)))
 						#CntPhaseList[phaseloop] += self.Mouth_Sht.cell(row = projectrow + phaseloop,column = self.colnum_mouth).value # 读公式结果的实现
 					Cnt_matchNum += 1									# 与当前项目匹配的岗位个数
 					pass
